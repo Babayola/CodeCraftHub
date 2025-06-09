@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  user-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/my-learning-db # Updated DB name
+      JWT_SECRET: ad049bc2a274248041fbf158c929659da3e60f6df74ac800136c6ba46b45368982771c7914c49dbf31c5e272c9111b0e5ae3ee133b3467b949b3bbb00a969932 # Your actual JWT Secret
+      PORT: 5000
+    depends_on:
+      - mongo
+  
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+volumes:
+  mongo-data:
