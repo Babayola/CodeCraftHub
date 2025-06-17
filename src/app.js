@@ -21,7 +21,25 @@ const allowedOrigins = [
 ];
 
 // --- Apply the CORS middleware here, referencing the allowedOrigins array ---
-app.use(cors());
+// REPLACE app.use(cors()); with the block below:
+app.use(cors({
+    origin: function (origin, callback) {
+        // This log helps confirm the exact origin coming from the client
+        console.log('Incoming origin from client (secure config):', origin); 
+
+        // Allow requests with no origin (like mobile apps or curl requests)
+        // or if the origin is in our allowed list
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Explicitly allow methods
+    credentials: true, // Allow cookies to be sent (useful for future auth if needed)
+    allowedHeaders: ['Content-Type', 'Authorization'] // Explicitly allow headers
+}));
+// --- END OF SPECIFIC CORS CONFIGURATION ---
 
 app.use(express.json()); // This should come after CORS for preflight handling
 connectDB(); // Call the function to connect to MongoDB
